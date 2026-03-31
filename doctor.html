@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Doctor Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
   <h1>Doctor Dashboard</h1>
 
   <h2>Patient Status</h2>
 
-<p><strong>Risk Level:</strong> <span id="risk">Normal</span></p>
-<p><strong>Insight:</strong> <span id="insight">Analyzing...</span></p>
-<p><strong>Health Score:</strong> <span id="score">100</span></p>
+  <p><strong>Risk Level:</strong> <span id="risk">Normal</span></p>
+  <p><strong>Insight:</strong> <span id="insight">Analyzing...</span></p>
+  <p><strong>Health Score:</strong> <span id="score">100</span></p>
 
   <h2>Blood Pressure</h2>
   <canvas id="bpChart" width="400" height="200"></canvas>
 
   <h2>SpO₂</h2>
   <canvas id="spo2Chart" width="400" height="200"></canvas>
+  <hr>
+
+  <h2>Lifetime Trend</h2>
+  <canvas id="lifetimeChart" width="400" height="150"></canvas>
 
   <script type="module" src="doctor.js"></script>
 
 </body>
+
 </html>

@@ -6,6 +6,28 @@ const riskEl = document.getElementById("risk");
 const insightEl = document.getElementById("insight");
 const scoreEl = document.getElementById("score");
 
+// Listen to alerts
+const alertsRef = collection(db, "alerts");
+
+onSnapshot(alertsRef, (snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type === "added") {
+      const alert = change.doc.data();
+
+      // 🚨 Show popup
+      alertDoctor(alert);
+    }
+  });
+});
+
+function alertDoctor(alert) {
+  const message = `🚨 ${alert.type} ALERT\n${alert.message}`;
+
+  alert(message); // simple for now
+
+  console.log("Doctor Alert:", alert);
+}
+
 // Data arrays
 let labels = [];
 let systolicData = [];
@@ -33,6 +55,31 @@ const spo2Chart = new Chart(spo2Ctx, {
     }]
   }
 });
+
+const lifetimeCtx = document.getElementById("lifetimeChart").getContext("2d");
+
+const lifetimeChart = new Chart(lifetimeCtx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [{
+      label: "BP Trend",
+      data: [],
+      pointRadius: 0,
+      tension: 0.4,
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    scales: {
+      x: {
+        display: false
+      }
+    }
+  }
+});
+
+lifetimeChart.options.animation = false;
 
 // Listen to Firebase in real-time
 const q = query(
@@ -71,52 +118,67 @@ onSnapshot(q, (snapshot) => {
   spo2Chart.data.datasets[0].data = tempSpo2;
   spo2Chart.update();
 
+  let fullLabels = [];
+  let fullBP = [];
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+
+    fullLabels.push(new Date(data.timestamp).toLocaleTimeString());
+    fullBP.push(data.bp_systolic);
+  });
+
+  // Update lifetime chart
+  lifetimeChart.data.labels = fullLabels;
+  lifetimeChart.data.datasets[0].data = fullBP;
+  lifetimeChart.update();
+
   // 🔥 Calculate insights
-let latestBP = tempSystolic[tempSystolic.length - 1];
-let latestSpo2 = tempSpo2[tempSpo2.length - 1];
+  let latestBP = tempSystolic[tempSystolic.length - 1];
+  let latestSpo2 = tempSpo2[tempSpo2.length - 1];
 
-// --- Risk Level ---
-let risk = "Normal";
-if (latestBP > 160 || latestSpo2 < 90) risk = "HIGH";
-else if (latestBP > 140 || latestSpo2 < 94) risk = "MODERATE";
+  // --- Risk Level ---
+  let risk = "Normal";
+  if (latestBP > 160 || latestSpo2 < 90) risk = "HIGH";
+  else if (latestBP > 140 || latestSpo2 < 94) risk = "MODERATE";
 
-// --- Trend Detection ---
-let insight = "Stable vitals";
+  // --- Trend Detection ---
+  let insight = "Stable vitals";
 
-// Compare first vs last in window
-if (tempSystolic.length >= 6) {
-  let firstAvg = (tempSystolic[0] + tempSystolic[1] + tempSystolic[2]) / 3;
-  let lastAvg = (
-    tempSystolic[tempSystolic.length - 1] +
-    tempSystolic[tempSystolic.length - 2] +
-    tempSystolic[tempSystolic.length - 3]
-  ) / 3;
+  // Compare first vs last in window
+  if (tempSystolic.length >= 6) {
+    let firstAvg = (tempSystolic[0] + tempSystolic[1] + tempSystolic[2]) / 3;
+    let lastAvg = (
+      tempSystolic[tempSystolic.length - 1] +
+      tempSystolic[tempSystolic.length - 2] +
+      tempSystolic[tempSystolic.length - 3]
+    ) / 3;
 
-  if (lastAvg - firstAvg > 8) {
-    insight = "BP rising steadily";
-  } else if (firstAvg - lastAvg > 8) {
-    insight = "BP decreasing";
+    if (lastAvg - firstAvg > 8) {
+      insight = "BP rising steadily";
+    } else if (firstAvg - lastAvg > 8) {
+      insight = "BP decreasing";
+    }
   }
-}
 
-// SpO₂ insight override
-if (latestSpo2 < 94) {
-  insight = "Oxygen levels dropping";
-}
+  // SpO₂ insight override
+  if (latestSpo2 < 94) {
+    insight = "Oxygen levels dropping";
+  }
 
-// --- Health Score ---
-let score = 100;
+  // --- Health Score ---
+  let score = 100;
 
-if (latestBP > 140) score -= 10;
-if (latestBP > 160) score -= 20;
-if (latestSpo2 < 94) score -= 15;
-if (latestSpo2 < 90) score -= 25;
+  if (latestBP > 140) score -= 10;
+  if (latestBP > 160) score -= 20;
+  if (latestSpo2 < 94) score -= 15;
+  if (latestSpo2 < 90) score -= 25;
 
-// Clamp
-score = Math.max(0, score);
+  // Clamp
+  score = Math.max(0, score);
 
-// Update UI
-riskEl.innerText = risk;
-insightEl.innerText = insight;
-scoreEl.innerText = score;
+  // Update UI
+  riskEl.innerText = risk;
+  insightEl.innerText = insight;
+  scoreEl.innerText = score;
 });
