@@ -2,22 +2,65 @@
 <html>
 <head>
   <title>Patient Registration</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="ptf-body">
 
-<h1>Patient Registration</h1>
+<div class="ptf-container">
 
-<hr>
+  <!-- Header -->
+  <header class="ptf-header">
+    <h1 class="ptf-title">Patient Registration</h1>
+  </header>
 
-<input id="name" placeholder="Full Name"><br><br>
-<input id="age" type="number" placeholder="Age"><br><br>
+  <hr class="ptf-divider">
 
-<input id="condition" placeholder="Condition (e.g. Hypertension)"><br><br>
+  <!-- Form Section -->
+  <section class="ptf-form-section">
 
-<!-- 🔥 Doctor Assignment -->
-<input id="doctorId" placeholder="Doctor Email (Assigned Doctor)"><br><br>
+    <div class="ptf-form-group">
+      <input 
+        id="name" 
+        class="ptf-input"
+        placeholder="Full Name"
+      >
+    </div>
 
-<button onclick="registerPatient()">Start Monitoring</button>
+    <div class="ptf-form-group">
+      <input 
+        id="age" 
+        type="number" 
+        class="ptf-input"
+        placeholder="Age"
+      >
+    </div>
+
+    <div class="ptf-form-group">
+      <input 
+        id="condition" 
+        class="ptf-input"
+        placeholder="Condition (e.g. Hypertension)"
+      >
+    </div>
+
+    <!-- Doctor Assignment -->
+    <div class="ptf-form-group">
+      <input 
+        id="doctorId" 
+        class="ptf-input"
+        placeholder="Doctor Email (Assigned Doctor)"
+      >
+    </div>
+
+    <div class="ptf-btn-group">
+      <button class="ptf-btn ptf-submit-btn" onclick="registerPatient()">
+        Start Monitoring
+      </button>
+    </div>
+
+  </section>
+
+</div>
 
 <script type="module" src="patient.js"></script>
 

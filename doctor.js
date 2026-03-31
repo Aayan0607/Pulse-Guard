@@ -133,12 +133,12 @@ const alertQuery = query(
   where("doctorId", "==", doctorId)
 );
 
-onSnapshot(alertQuery, (snapshot) => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type === "added") {
-      const alertData = change.doc.data();
+// onSnapshot(alertQuery, (snapshot) => {
+//   snapshot.docChanges().forEach((change) => {
+//     if (change.type === "added") {
+//       const alertData = change.doc.data();
 
-      alert(`🚨 ${alertData.type}\n${alertData.message}`);
-    }
-  });
-});
+//       alert(`🚨 ${alertData.type}\n${alertData.message}`);
+//     }
+//   });
+// });

@@ -2,18 +2,68 @@
 <html>
 <head>
   <title>PulseGuard Patient App</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <h1>PulseGuard Patient App</h1>
+<body class="ind-body">
 
-  <h2>Vitals</h2>
-  <p>BP: <span id="bp">--</span></p>
-  <p>SpO₂: <span id="spo2">--</span>%</p>
+<div class="ind-container">
 
-  <h2>Status: <span id="status">Normal</span></h2>
+  <!-- Header -->
+  <header class="ind-header">
+    <h1 class="ind-title">PulseGuard Patient App</h1>
+  </header>
 
-  <button onclick="startSimulation()">Start Monitoring</button>
+  <!-- Vitals Section -->
+  <section class="ind-vitals-section">
+    <h2 class="ind-section-title">Vitals</h2>
 
-  <script type="module" src="app.js"></script>
+    <div class="ind-vitals-card">
+      <p class="ind-vital-item">
+        BP: <span id="bp" class="ind-vital-value">--</span>
+      </p>
+
+      <p class="ind-vital-item">
+        SpO₂: <span id="spo2" class="ind-vital-value">--</span>%
+      </p>
+    </div>
+  </section>
+
+  <!-- Status Section -->
+  <section class="ind-status-section">
+    <h2 class="ind-status-text">
+      Status: <span id="status" class="ind-status-value ind-status-normal">Normal</span>
+    </h2>
+  </section>
+
+  <!-- Action Button -->
+  <div class="ind-btn-group">
+    <button id="startBtn" class="ind-btn ind-start-btn" onclick="startSimulation()">
+      Start Monitoring
+    </button>
+  </div>
+
+</div>
+
+<script type="module" src="app.js"></script>
+<script>function updateStatus(value) {
+  const statusEl = document.getElementById("status");
+
+  statusEl.classList.remove(
+    "ind-status-normal",
+    "ind-status-warning",
+    "ind-status-danger"
+  );
+
+  if (value === "Normal") {
+    statusEl.classList.add("ind-status-normal");
+  } else if (value === "Warning") {
+    statusEl.classList.add("ind-status-warning");
+  } else {
+    statusEl.classList.add("ind-status-danger");
+  }
+
+  statusEl.textContent = value;
+}</script>
+
 </body>
 </html>

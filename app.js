@@ -2,6 +2,8 @@ import { db, collection, addDoc } from "./firebase.js";
 
 let warningCount = 0;
 let criticalCount = 0;
+let intervalId = null;
+let isRunning = false;
 
 // 🔥 Get IDs from session
 const patientId = localStorage.getItem("patientId");
@@ -40,7 +42,7 @@ function generateVitals() {
     if (Math.random() < 0.1) {
       currentVitals.systolic += 20;
       currentVitals.spo2 -= 5;
-      isRecovering = true;
+      isRecovering = false;
     }
   }
 
@@ -96,24 +98,40 @@ async function sendAlertToFirebase(type, message) {
 // Simulation
 function startSimulation() {
 
-  // 🔥 Safety check
+  const btn = document.getElementById("startBtn");
+
+  // 🔴 If already running → STOP
+  if (isRunning) {
+  clearInterval(intervalId);
+  isRunning = false;
+
+  btn.innerText = "Start Monitoring";
+  btn.classList.remove("ind-stop-btn");
+  btn.classList.add("ind-start-btn");
+
+  console.log("⏹ Monitoring stopped");
+  return;
+}
+
+  // 🟢 Start monitoring
   if (!patientId) {
     alert("No patient found. Please register first.");
     return;
   }
 
-  setInterval(async () => {
+  isRunning = true;
+  btn.innerText = "Stop Monitoring";
+
+  intervalId = setInterval(async () => {
 
     const vitals = generateVitals();
 
-    // UI update
     bpEl.innerText = `${vitals.systolic}/${vitals.diastolic}`;
     spo2El.innerText = vitals.spo2;
 
     const status = getStatus(vitals.systolic, vitals.diastolic, vitals.spo2);
     statusEl.innerText = status;
 
-    // Track states
     if (status === "WARNING") {
       warningCount++;
       criticalCount = 0;
@@ -125,7 +143,6 @@ function startSimulation() {
       criticalCount = 0;
     }
 
-    // Alerts
     if (criticalCount >= 2) {
       showAlert("🚨 CRITICAL ALERT: Immediate attention required!");
       await sendAlertToFirebase("CRITICAL", "Vitals critical for consecutive readings");
@@ -138,10 +155,7 @@ function startSimulation() {
       warningCount = 0;
     }
 
-    // Send data
     await sendToFirebase(vitals);
-
-    console.log("Data:", vitals, status);
 
   }, 3000);
 }

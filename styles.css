@@ -144,3 +144,369 @@
     font-size: 24px;
   }
 }
+
+/* =========================
+   Patient Form Styles
+   Namespace: ptf-
+   ========================= */
+
+/* Body */
+.ptf-body {
+  background: linear-gradient(135deg, #f0f9ff, #e6fff5);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.ptf-container {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Header */
+.ptf-header {
+  margin-bottom: 15px;
+}
+
+.ptf-title {
+  font-size: 26px;
+  color: #2bb673;
+  font-weight: 600;
+}
+
+/* Divider */
+.ptf-divider {
+  margin: 15px 0;
+  border: none;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* Form */
+.ptf-form-group {
+  margin-bottom: 15px;
+}
+
+/* Input */
+.ptf-input {
+  width: 100%;
+  padding: 11px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.ptf-input:focus {
+  border-color: #2bb673;
+  outline: none;
+}
+
+/* Button */
+.ptf-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.ptf-submit-btn {
+  background-color: #2bb673;
+  color: white;
+}
+
+.ptf-submit-btn:hover {
+  background-color: #23965e;
+}
+
+/* Button Group */
+.ptf-btn-group {
+  margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .ptf-container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .ptf-title {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   Index (Patient Dashboard)
+   Namespace: ind-
+   ========================= */
+
+/* Body */
+.ind-body {
+  background: linear-gradient(135deg, #eef7ff, #e6fff5);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.ind-container {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Header */
+.ind-header {
+  margin-bottom: 20px;
+}
+
+.ind-title {
+  font-size: 26px;
+  color: #0a7c86;
+  font-weight: 600;
+}
+
+/* Section Titles */
+.ind-section-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Vitals Card */
+.ind-vitals-card {
+  background: #f8fbff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.03);
+}
+
+.ind-vital-item {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #444;
+}
+
+.ind-vital-value {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Status */
+.ind-status-section {
+  margin: 20px 0;
+}
+
+.ind-status-text {
+  font-size: 20px;
+}
+
+.ind-status-value {
+  font-weight: bold;
+}
+
+/* Status Colors */
+.ind-status-normal {
+  color: #2bb673;
+}
+
+.ind-status-warning {
+  color: #ff9800;
+}
+
+.ind-status-danger {
+  color: #e53935;
+}
+
+/* Button */
+.ind-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.ind-start-btn {
+  background-color: #0a7c86;
+  color: white;
+}
+
+.ind-start-btn:hover {
+  background-color: #06626a;
+}
+
+/* Stop Button (NEW) */
+.ind-stop-btn {
+  background-color: #e53935;
+  color: white;
+}
+
+.ind-stop-btn:hover {
+  background-color: #c62828;
+}
+
+/* Button Group */
+.ind-btn-group {
+  margin-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .ind-container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .ind-title {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   Doctor Dashboard Styles
+   Namespace: dr-
+   ========================= */
+
+/* Body */
+.dr-body {
+  background: linear-gradient(135deg, #eef3ff, #f4f9ff);
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Container */
+.dr-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Header */
+.dr-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.dr-title {
+  font-size: 28px;
+  color: #0a7c86;
+  font-weight: 600;
+}
+
+/* Sections */
+.dr-section {
+  background: #ffffff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Section Titles */
+.dr-section-title {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Dropdown */
+.dr-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.dr-select:focus {
+  border-color: #0a7c86;
+  outline: none;
+}
+
+/* Status Card */
+.dr-status-card {
+  border-left: 5px solid #0a7c86;
+}
+
+/* Status Items */
+.dr-status-item {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+/* Risk Colors */
+.dr-risk {
+  font-weight: bold;
+}
+
+.dr-risk-normal {
+  color: #2bb673;
+}
+
+.dr-risk-warning {
+  color: #ff9800;
+}
+
+.dr-risk-danger {
+  color: #e53935;
+}
+
+/* Insight */
+.dr-insight {
+  color: #555;
+}
+
+/* Score */
+.dr-score {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Charts */
+.dr-chart-container {
+  width: 100%;
+  height: 250px;
+}
+
+/* Divider */
+.dr-divider {
+  border: none;
+  height: 1px;
+  background: #ddd;
+  margin: 20px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dr-container {
+    padding: 10px;
+  }
+
+  .dr-title {
+    font-size: 24px;
+  }
+
+  .dr-chart-container {
+    height: 200px;
+  }
+}

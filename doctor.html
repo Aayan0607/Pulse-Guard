@@ -3,36 +3,74 @@
 
 <head>
   <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
+<body class="dr-body">
 
-  <h1>Doctor Dashboard</h1>
+<div class="dr-container">
 
-  <h3>Select Patient</h3>
-<select id="patientSelect"></select>
+  <!-- Header -->
+  <header class="dr-header">
+    <h1 class="dr-title">Doctor Dashboard</h1>
+  </header>
 
-<br><br>
+  <!-- Patient Selector -->
+  <section class="dr-section">
+    <h3 class="dr-section-title">Select Patient</h3>
+    <select id="patientSelect" class="dr-select"></select>
+  </section>
 
-  <h2>Patient Status</h2>
+  <!-- Patient Status -->
+  <section class="dr-section dr-status-card">
 
-  <p><strong>Risk Level:</strong> <span id="risk">Normal</span></p>
-  <p><strong>Insight:</strong> <span id="insight">Analyzing...</span></p>
-  <p><strong>Health Score:</strong> <span id="score">100</span></p>
+    <h2 class="dr-section-title">Patient Status</h2>
 
-  <h2>Blood Pressure</h2>
-  <canvas id="bpChart" width="400" height="200"></canvas>
+    <p class="dr-status-item">
+      <strong>Risk Level:</strong> 
+      <span id="risk" class="dr-risk dr-risk-normal">Normal</span>
+    </p>
 
-  <h2>SpO₂</h2>
-  <canvas id="spo2Chart" width="400" height="200"></canvas>
-  <hr>
+    <p class="dr-status-item">
+      <strong>Insight:</strong> 
+      <span id="insight" class="dr-insight">Analyzing...</span>
+    </p>
 
-  <h2>Lifetime Trend</h2>
-  <canvas id="lifetimeChart" width="400" height="150"></canvas>
+    <p class="dr-status-item">
+      <strong>Health Score:</strong> 
+      <span id="score" class="dr-score">100</span>
+    </p>
 
-  <script type="module" src="doctor.js"></script>
+  </section>
+
+  <!-- Charts -->
+  <section class="dr-section">
+    <h2 class="dr-section-title">Blood Pressure</h2>
+    <div class="dr-chart-container">
+      <canvas id="bpChart"></canvas>
+    </div>
+  </section>
+
+  <section class="dr-section">
+    <h2 class="dr-section-title">SpO₂</h2>
+    <div class="dr-chart-container">
+      <canvas id="spo2Chart"></canvas>
+    </div>
+  </section>
+
+  <hr class="dr-divider">
+
+  <section class="dr-section">
+    <h2 class="dr-section-title">Lifetime Trend</h2>
+    <div class="dr-chart-container">
+      <canvas id="lifetimeChart"></canvas>
+    </div>
+  </section>
+
+</div>
+
+<script type="module" src="doctor.js"></script>
 
 </body>
-
 </html>
