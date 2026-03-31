@@ -14,22 +14,40 @@ let currentVitals = {
   spo2: 98
 };
 
-function generateVitals() {
-  // Small gradual change
-  currentVitals.systolic += Math.floor(Math.random() * 5 - 2); // -2 to +2
-  currentVitals.diastolic += Math.floor(Math.random() * 3 - 1); // -1 to +1
-  currentVitals.spo2 += Math.floor(Math.random() * 3 - 1); // -1 to +1
+let isRecovering = false;
 
-  // Clamp realistic ranges
+function generateVitals() {
+
+  // 🔥 If in recovery mode → bring values DOWN faster
+  if (isRecovering) {
+    currentVitals.systolic -= Math.floor(Math.random() * 5 + 3); // -3 to -7
+    currentVitals.diastolic -= Math.floor(Math.random() * 3 + 1);
+    currentVitals.spo2 += Math.floor(Math.random() * 2 + 1);
+
+    // Exit recovery when normal
+    if (currentVitals.systolic < 135 && currentVitals.spo2 > 95) {
+      isRecovering = false;
+    }
+
+  } else {
+    // Normal small fluctuations
+    currentVitals.systolic += Math.floor(Math.random() * 5 - 2);
+    currentVitals.diastolic += Math.floor(Math.random() * 3 - 1);
+    currentVitals.spo2 += Math.floor(Math.random() * 3 - 1);
+
+    // 🔥 Trigger spike occasionally
+    if (Math.random() < 0.1) {
+      currentVitals.systolic += 20;
+      currentVitals.spo2 -= 5;
+
+      isRecovering = true; // start recovery after spike
+    }
+  }
+
+  // Clamp ranges
   currentVitals.systolic = Math.max(100, Math.min(180, currentVitals.systolic));
   currentVitals.diastolic = Math.max(60, Math.min(110, currentVitals.diastolic));
   currentVitals.spo2 = Math.max(85, Math.min(100, currentVitals.spo2));
-
-  // 🔥 Rare spike event (for demo drama)
-  if (Math.random() < 0.1) { // 10% chance
-    currentVitals.systolic += 20;
-    currentVitals.spo2 -= 5;
-  }
 
   return { ...currentVitals };
 }
