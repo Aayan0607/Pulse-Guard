@@ -1,6 +1,8 @@
 // Firebase core
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 
+import { getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
 // Firestore (THIS WAS MISSING)
 import { 
   getFirestore, 
@@ -8,7 +10,8 @@ import {
   addDoc, 
   onSnapshot, 
   query, 
-  orderBy 
+  orderBy,
+  where
 } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 // Your config
@@ -29,4 +32,4 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Export everything you need
-export { db, collection, addDoc, onSnapshot, query, orderBy };
+export { db, collection, addDoc, onSnapshot, query, orderBy, where, getDocs };

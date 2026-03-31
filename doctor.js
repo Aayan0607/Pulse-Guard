@@ -1,184 +1,144 @@
-import { db, collection, onSnapshot, query, orderBy } from "./firebase.js";
+import { 
+  db, 
+  collection, 
+  query, 
+  where, 
+  onSnapshot, 
+  orderBy 
+} from "./firebase.js";
 
-const bpCtx = document.getElementById("bpChart").getContext("2d");
-const spo2Ctx = document.getElementById("spo2Chart").getContext("2d");
-const riskEl = document.getElementById("risk");
-const insightEl = document.getElementById("insight");
-const scoreEl = document.getElementById("score");
+// 🔥 Get doctor ID
+const doctorId = localStorage.getItem("doctorId");
 
-// Listen to alerts
-const alertsRef = collection(db, "alerts");
+// UI
+const selectEl = document.getElementById("patientSelect");
 
-onSnapshot(alertsRef, (snapshot) => {
-  snapshot.docChanges().forEach((change) => {
-    if (change.type === "added") {
-      const alert = change.doc.data();
-
-      // 🚨 Show popup
-      alertDoctor(alert);
-    }
-  });
-});
-
-function alertDoctor(alert) {
-  const message = `🚨 ${alert.type} ALERT\n${alert.message}`;
-
-  alert(message); // simple for now
-
-  console.log("Doctor Alert:", alert);
+if (!selectEl) {
+  console.error("❌ patientSelect not found in HTML");
 }
 
-// Data arrays
-let labels = [];
-let systolicData = [];
-let spo2Data = [];
-
 // Charts
+const bpCtx = document.getElementById("bpChart").getContext("2d");
+const spo2Ctx = document.getElementById("spo2Chart").getContext("2d");
+const lifetimeCtx = document.getElementById("lifetimeChart").getContext("2d");
+
+// Chart setup
 const bpChart = new Chart(bpCtx, {
   type: "line",
-  data: {
-    labels: labels,
-    datasets: [{
-      label: "Systolic BP",
-      data: systolicData
-    }]
-  }
+  data: { labels: [], datasets: [{ label: "BP", data: [] }] },
 });
 
 const spo2Chart = new Chart(spo2Ctx, {
   type: "line",
-  data: {
-    labels: labels,
-    datasets: [{
-      label: "SpO₂",
-      data: spo2Data
-    }]
-  }
+  data: { labels: [], datasets: [{ label: "SpO₂", data: [] }] },
 });
-
-const lifetimeCtx = document.getElementById("lifetimeChart").getContext("2d");
 
 const lifetimeChart = new Chart(lifetimeCtx, {
   type: "line",
-  data: {
-    labels: [],
-    datasets: [{
-      label: "BP Trend",
-      data: [],
-      pointRadius: 0,
-      tension: 0.4,
-      borderWidth: 2,
-    }]
-  },
-  options: {
-    scales: {
-      x: {
-        display: false
-      }
-    }
-  }
+  data: { labels: [], datasets: [{ label: "Lifetime BP", data: [], pointRadius: 0, tension: 0.4 }] },
+  options: { scales: { x: { display: false } }, animation: false }
 });
 
-lifetimeChart.options.animation = false;
-
-// Listen to Firebase in real-time
-const q = query(
-  collection(db, "patients", "patient_1", "readings"),
-  orderBy("timestamp")
+// 🔥 Load patients for this doctor
+const patientQuery = query(
+  collection(db, "patients"),
+  where("doctorId", "==", doctorId)
 );
 
-onSnapshot(q, (snapshot) => {
-  let tempLabels = [];
-  let tempSystolic = [];
-  let tempSpo2 = [];
+let patients = [];
+
+onSnapshot(patientQuery, (snapshot) => {
+  patients = [];
 
   snapshot.forEach((doc) => {
-    const data = doc.data();
-
-    tempLabels.push(new Date(data.timestamp).toLocaleTimeString());
-    tempSystolic.push(data.bp_systolic);
-    tempSpo2.push(data.spo2);
+    patients.push({ id: doc.id, ...doc.data() });
   });
 
-  // 🔥 Keep only last 20 readings
-  const MAX_POINTS = 20;
+  renderDropdown();
+});
 
-  if (tempLabels.length > MAX_POINTS) {
-    tempLabels = tempLabels.slice(-MAX_POINTS);
-    tempSystolic = tempSystolic.slice(-MAX_POINTS);
-    tempSpo2 = tempSpo2.slice(-MAX_POINTS);
+// Dropdown
+function renderDropdown() {
+  selectEl.innerHTML = "";
+
+  patients.forEach((p) => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = p.name;
+    selectEl.appendChild(option);
+  });
+
+  if (patients.length > 0) {
+    loadPatientData(patients[0].id);
   }
+}
 
-  // Update charts
-  bpChart.data.labels = tempLabels;
-  bpChart.data.datasets[0].data = tempSystolic;
-  bpChart.update();
+// Change patient
+selectEl.addEventListener("change", (e) => {
+  loadPatientData(e.target.value);
+});
 
-  spo2Chart.data.labels = tempLabels;
-  spo2Chart.data.datasets[0].data = tempSpo2;
-  spo2Chart.update();
+// 🔥 Load readings dynamically
+let unsubscribe = null;
 
-  let fullLabels = [];
-  let fullBP = [];
+function loadPatientData(patientId) {
 
-  snapshot.forEach((doc) => {
-    const data = doc.data();
+  // Stop previous listener
+  if (unsubscribe) unsubscribe();
 
-    fullLabels.push(new Date(data.timestamp).toLocaleTimeString());
-    fullBP.push(data.bp_systolic);
+  const q = query(
+    collection(db, "patients", patientId, "readings"),
+    orderBy("timestamp")
+  );
+
+  unsubscribe = onSnapshot(q, (snapshot) => {
+
+    let labels = [];
+    let systolic = [];
+    let spo2 = [];
+
+    snapshot.forEach((doc) => {
+      const d = doc.data();
+      labels.push(new Date(d.timestamp).toLocaleTimeString());
+      systolic.push(d.bp_systolic);
+      spo2.push(d.spo2);
+    });
+
+    // 🔥 Last 20 for live charts
+    const MAX = 20;
+
+    const liveLabels = labels.slice(-MAX);
+    const liveBP = systolic.slice(-MAX);
+    const liveSpO2 = spo2.slice(-MAX);
+
+    // Update live charts
+    bpChart.data.labels = liveLabels;
+    bpChart.data.datasets[0].data = liveBP;
+    bpChart.update();
+
+    spo2Chart.data.labels = liveLabels;
+    spo2Chart.data.datasets[0].data = liveSpO2;
+    spo2Chart.update();
+
+    // Lifetime chart
+    lifetimeChart.data.labels = labels;
+    lifetimeChart.data.datasets[0].data = systolic;
+    lifetimeChart.update();
   });
+}
 
-  // Update lifetime chart
-  lifetimeChart.data.labels = fullLabels;
-  lifetimeChart.data.datasets[0].data = fullBP;
-  lifetimeChart.update();
+// 🚨 Doctor Alerts (filtered)
+const alertQuery = query(
+  collection(db, "alerts"),
+  where("doctorId", "==", doctorId)
+);
 
-  // 🔥 Calculate insights
-  let latestBP = tempSystolic[tempSystolic.length - 1];
-  let latestSpo2 = tempSpo2[tempSpo2.length - 1];
+onSnapshot(alertQuery, (snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    if (change.type === "added") {
+      const alertData = change.doc.data();
 
-  // --- Risk Level ---
-  let risk = "Normal";
-  if (latestBP > 160 || latestSpo2 < 90) risk = "HIGH";
-  else if (latestBP > 140 || latestSpo2 < 94) risk = "MODERATE";
-
-  // --- Trend Detection ---
-  let insight = "Stable vitals";
-
-  // Compare first vs last in window
-  if (tempSystolic.length >= 6) {
-    let firstAvg = (tempSystolic[0] + tempSystolic[1] + tempSystolic[2]) / 3;
-    let lastAvg = (
-      tempSystolic[tempSystolic.length - 1] +
-      tempSystolic[tempSystolic.length - 2] +
-      tempSystolic[tempSystolic.length - 3]
-    ) / 3;
-
-    if (lastAvg - firstAvg > 8) {
-      insight = "BP rising steadily";
-    } else if (firstAvg - lastAvg > 8) {
-      insight = "BP decreasing";
+      alert(`🚨 ${alertData.type}\n${alertData.message}`);
     }
-  }
-
-  // SpO₂ insight override
-  if (latestSpo2 < 94) {
-    insight = "Oxygen levels dropping";
-  }
-
-  // --- Health Score ---
-  let score = 100;
-
-  if (latestBP > 140) score -= 10;
-  if (latestBP > 160) score -= 20;
-  if (latestSpo2 < 94) score -= 15;
-  if (latestSpo2 < 90) score -= 25;
-
-  // Clamp
-  score = Math.max(0, score);
-
-  // Update UI
-  riskEl.innerText = risk;
-  insightEl.innerText = insight;
-  scoreEl.innerText = score;
+  });
 });

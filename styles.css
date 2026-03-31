@@ -1,0 +1,146 @@
+/* =========================
+   PulseGuard Login Styles
+   Namespace: lgn-
+   ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Body */
+.lgn-body {
+  background: linear-gradient(135deg, #e6f7f5, #f4f9ff);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.lgn-container {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+/* Header */
+.lgn-header {
+  margin-bottom: 15px;
+}
+
+.lgn-title {
+  font-size: 28px;
+  color: #0a7c86;
+  font-weight: 600;
+}
+
+/* Divider */
+.lgn-divider {
+  margin: 15px 0;
+  border: none;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* Section Titles */
+.lgn-section-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Button Base */
+.lgn-btn {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+/* Buttons */
+.lgn-patient-btn {
+  background-color: #2bb673;
+  color: #fff;
+}
+
+.lgn-patient-btn:hover {
+  background-color: #23965e;
+}
+
+.lgn-doctor-btn {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.lgn-doctor-btn:hover {
+  background-color: #005dc1;
+}
+
+.lgn-login-btn {
+  background-color: #0a7c86;
+  color: #fff;
+}
+
+.lgn-login-btn:hover {
+  background-color: #06626a;
+}
+
+.lgn-back-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.lgn-back-btn:hover {
+  background-color: #b3b3b3;
+}
+
+/* Button Group */
+.lgn-btn-group {
+  margin-top: 10px;
+}
+
+/* Form */
+.lgn-form-group {
+  margin-bottom: 15px;
+}
+
+.lgn-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.lgn-input:focus {
+  border-color: #0a7c86;
+  outline: none;
+}
+
+/* Hidden */
+.lgn-hidden {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .lgn-container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .lgn-title {
+    font-size: 24px;
+  }
+}

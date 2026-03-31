@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PulseGuard Login</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="lgn-body">
+
+<!-- Main Container -->
+<div class="lgn-container">
+
+  <!-- Header -->
+  <header class="lgn-header">
+    <h1 class="lgn-title">PulseGuard</h1>
+  </header>
+
+  <hr class="lgn-divider">
+
+  <!-- Role Selection -->
+  <section class="lgn-role-section" id="roleSelection">
+    <h2 class="lgn-section-title">Select Role</h2>
+
+    <div class="lgn-btn-group">
+      <button class="lgn-btn lgn-patient-btn" onclick="goToPatient()">Patient Login</button>
+      <button class="lgn-btn lgn-doctor-btn" onclick="showDoctorLogin()">Doctor Login</button>
+    </div>
+  </section>
+
+  <!-- Doctor Login (Hidden Initially) -->
+  <section class="lgn-doctor-section lgn-hidden" id="doctorLoginSection">
+    
+    <h2 class="lgn-section-title">Doctor Login</h2>
+
+    <div class="lgn-form-group">
+      <input 
+        type="email" 
+        id="docEmail" 
+        class="lgn-input"
+        placeholder="Enter Email"
+      >
+    </div>
+
+    <div class="lgn-form-group">
+      <input 
+        type="password" 
+        id="docPass" 
+        class="lgn-input"
+        placeholder="Enter Password"
+      >
+    </div>
+
+    <div class="lgn-btn-group">
+      <button class="lgn-btn lgn-login-btn" onclick="doctorLogin()">Login</button>
+      <button class="lgn-btn lgn-back-btn" onclick="goBack()">Back</button>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+    function showDoctorLogin() {
+  document.getElementById("roleSelection").style.display = "none";
+  document.getElementById("doctorLoginSection").style.display = "block";
+}
+
+function goBack() {
+  document.getElementById("roleSelection").style.display = "block";
+  document.getElementById("doctorLoginSection").style.display = "none";
+}
+function goToPatient() {
+  window.location.href = "patient-form.html";
+}
+
+function doctorLogin() {
+  const email = document.getElementById("docEmail").value;
+  const pass = document.getElementById("docPass").value;
+
+  if (!email || !pass) {
+    alert("Please enter email and password");
+    return;
+  }
+
+  // 🔥 Store doctor identity (session)
+  localStorage.setItem("doctorId", email);
+
+  // Optional: store role
+  localStorage.setItem("role", "doctor");
+
+  // Redirect
+  window.location.href = "doctor.html";
+}
+</script>
+
+</body>
+</html>

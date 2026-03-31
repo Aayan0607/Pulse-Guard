@@ -1,13 +1,18 @@
+import { db, collection, addDoc } from "./firebase.js";
+
 let warningCount = 0;
 let criticalCount = 0;
-import { db, collection, addDoc } from "./firebase.js";
+
+// 🔥 Get IDs from session
+const patientId = localStorage.getItem("patientId");
+const doctorId = localStorage.getItem("doctorId");
 
 // UI elements
 const bpEl = document.getElementById("bp");
 const spo2El = document.getElementById("spo2");
 const statusEl = document.getElementById("status");
 
-// Generate random vitals
+// Generate vitals
 let currentVitals = {
   systolic: 120,
   diastolic: 80,
@@ -18,33 +23,27 @@ let isRecovering = false;
 
 function generateVitals() {
 
-  // 🔥 If in recovery mode → bring values DOWN faster
   if (isRecovering) {
-    currentVitals.systolic -= Math.floor(Math.random() * 5 + 3); // -3 to -7
+    currentVitals.systolic -= Math.floor(Math.random() * 5 + 3);
     currentVitals.diastolic -= Math.floor(Math.random() * 3 + 1);
     currentVitals.spo2 += Math.floor(Math.random() * 2 + 1);
 
-    // Exit recovery when normal
     if (currentVitals.systolic < 135 && currentVitals.spo2 > 95) {
       isRecovering = false;
     }
 
   } else {
-    // Normal small fluctuations
     currentVitals.systolic += Math.floor(Math.random() * 5 - 2);
     currentVitals.diastolic += Math.floor(Math.random() * 3 - 1);
     currentVitals.spo2 += Math.floor(Math.random() * 3 - 1);
 
-    // 🔥 Trigger spike occasionally
     if (Math.random() < 0.1) {
       currentVitals.systolic += 20;
       currentVitals.spo2 -= 5;
-
-      isRecovering = true; // start recovery after spike
+      isRecovering = true;
     }
   }
 
-  // Clamp ranges
   currentVitals.systolic = Math.max(100, Math.min(180, currentVitals.systolic));
   currentVitals.diastolic = Math.max(60, Math.min(110, currentVitals.diastolic));
   currentVitals.spo2 = Math.max(85, Math.min(100, currentVitals.spo2));
@@ -52,43 +51,69 @@ function generateVitals() {
   return { ...currentVitals };
 }
 
-// Determine status
+// Status logic
 function getStatus(s, d, spo2) {
   if (s > 160 || spo2 < 90) return "CRITICAL";
   if (s > 140 || spo2 < 94) return "WARNING";
   return "NORMAL";
 }
 
-// Push to Firebase
+// 🔥 Send readings to correct patient
 async function sendToFirebase(vitals) {
   try {
-    await addDoc(collection(db, "patients", "patient_1", "readings"), {
+    await addDoc(collection(db, "patients", patientId, "readings"), {
       bp_systolic: vitals.systolic,
       bp_diastolic: vitals.diastolic,
       spo2: vitals.spo2,
       timestamp: Date.now()
     });
 
-    console.log("✅ Data written to Firebase");
+    console.log("✅ Data written");
 
   } catch (error) {
     console.error("❌ Firebase write error:", error);
   }
 }
 
-// Simulation loop
+// 🔥 Send alerts linked to doctor + patient
+async function sendAlertToFirebase(type, message) {
+  try {
+    await addDoc(collection(db, "alerts"), {
+      patientId: patientId,
+      doctorId: doctorId,
+      type: type,
+      message: message,
+      timestamp: Date.now()
+    });
+
+    console.log("🚨 Alert sent");
+
+  } catch (error) {
+    console.error("❌ Alert error:", error);
+  }
+}
+
+// Simulation
 function startSimulation() {
+
+  // 🔥 Safety check
+  if (!patientId) {
+    alert("No patient found. Please register first.");
+    return;
+  }
+
   setInterval(async () => {
+
     const vitals = generateVitals();
 
-    // Update UI
+    // UI update
     bpEl.innerText = `${vitals.systolic}/${vitals.diastolic}`;
     spo2El.innerText = vitals.spo2;
 
     const status = getStatus(vitals.systolic, vitals.diastolic, vitals.spo2);
     statusEl.innerText = status;
 
-    // Track consecutive states
+    // Track states
     if (status === "WARNING") {
       warningCount++;
       criticalCount = 0;
@@ -100,39 +125,29 @@ function startSimulation() {
       criticalCount = 0;
     }
 
-    // Trigger alerts
+    // Alerts
     if (criticalCount >= 2) {
       showAlert("🚨 CRITICAL ALERT: Immediate attention required!");
-      sendAlertToFirebase("CRITICAL", "Vitals critical for consecutive readings");
-      criticalCount = 0; // reset after alert
+      await sendAlertToFirebase("CRITICAL", "Vitals critical for consecutive readings");
+      criticalCount = 0;
     }
 
     if (warningCount >= 3) {
       showAlert("⚠️ WARNING: Health parameters unstable");
-      sendAlertToFirebase("WARNING", "Vitals abnormal for sustained period");
+      await sendAlertToFirebase("WARNING", "Vitals abnormal for sustained period");
       warningCount = 0;
     }
 
-    async function sendAlertToFirebase(type, message) {
-      await addDoc(collection(db, "alerts"), {
-        patientId: "patient_1",
-        type: type,
-        message: message,
-        timestamp: Date.now()
-      });
-    }
-
-    // Send to Firebase
+    // Send data
     await sendToFirebase(vitals);
 
-    console.log("Data sent:", vitals, status);
+    console.log("Data:", vitals, status);
 
-  }, 3000); // every 3 sec (simulating 30 mins)
+  }, 3000);
 }
 
 function showAlert(message) {
-  alert(message); // simple popup (works for hackathon)
+  alert(message);
 }
 
-// Make button work
 window.startSimulation = startSimulation;
